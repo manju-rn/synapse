@@ -39,6 +39,13 @@ class WellKnownBuilder:
 
         result = {"m.homeserver": {"base_url": self._config.server.public_baseurl}}
 
+        # Manju PR Start - Add the json entry for the jitsi_url so that it will be reflected in the /.well-known/matix/client
+        if self._config.server.jitsi_url:
+            result["im.vector.riot.jitsi"] = {
+                "preferredDomain": self._config.server.jitsi_url
+            }
+        # Manju PR End        
+        
         if self._config.registration.default_identity_server:
             result["m.identity_server"] = {
                 "base_url": self._config.registration.default_identity_server
