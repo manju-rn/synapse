@@ -304,6 +304,30 @@ class ServerConfig(Config):
                 "public_baseurl cannot contain query parameters or a #-fragment"
             )
 
+		# Manju PR Start - Get the meet.jit.si server - you can specify your own custom jit.si server
+        jitsi_url = config.get("jitsi_url")
+        if jitsi_url is None:
+            jitsi_url = f""
+            logger.info("Using default jitsi_url %s", jitsi_url)
+        else:
+            self.serve_client_wellknown = True
+            if jitsi_url[-1] != "/":
+                jitsi_url += "/"
+        self.jitsi_url = jitsi_url
+
+        # check that jitsi_url is valid
+        try:
+            splits = urllib.parse.urlsplit(self.jitsi_url)
+        except Exception as e:
+            raise ConfigError(f"Unable to parse URL: {e}", ("jitsi_url",))
+
+        if splits.query or splits.fragment:
+            raise ConfigError(
+                "jitsi_url cannot contain query parameters or a #-fragment"
+            )
+		# Manju PR - End            
+            
+            
         # Whether to enable user presence.
         presence_config = config.get("presence") or {}
         self.use_presence = presence_config.get("enabled")
